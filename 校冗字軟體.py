@@ -61,3 +61,12 @@ if st.button("檢測"):
             st.sidebar.markdown(f"- {word}: {count} 次")
     else:
         st.warning("請輸入文本！")
+
+# 高亮顯示用戶選擇的詞
+if st.session_state["highlight_word"]:
+    highlight_word = st.session_state["highlight_word"]
+    highlighted_text = user_input.replace(
+        highlight_word, f"<span style='background-color: yellow;'>{highlight_word}</span>"
+    )
+    st.markdown("### 高亮顯示：")
+    st.markdown(highlighted_text, unsafe_allow_html=True)
