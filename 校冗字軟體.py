@@ -32,7 +32,7 @@ def detect_redundant_words(text, threshold=3):
             marked_paragraphs.append(paragraph)
 
     # 返回標記文本和統計報告
-    marked_text = "\n".join(marked_paragraphs)
+    marked_text = "\n\n".join(marked_paragraphs)  # 使用雙換行符保留段落結構
     return marked_text, word_counter
 
 # 初始化 session state
@@ -56,7 +56,7 @@ if st.button("檢測"):
 
         # 顯示檢測結果
         st.markdown("### 檢測結果：")
-        st.markdown(marked_text, unsafe_allow_html=True)
+        st.markdown(marked_text.replace("\n", "<br>"), unsafe_allow_html=True)  # 使用 <br> 保留換行符
 
         # 顯示統計報告
         st.sidebar.markdown("### 統計報告")
@@ -70,8 +70,14 @@ if st.button("檢測"):
 # 高亮顯示用戶選擇的詞
 if st.session_state["highlight_word"]:
     highlight_word = st.session_state["highlight_word"]
-    highlighted_text = re.sub(
-        f"({highlight_word})", r"<span style='background-color: yellow;'>\1</span>", user_input
-    )
+    highlighted_paragraphs = [
+        re.sub(
+            f"({highlight_word})", 
+            r"<span style='background-color: yellow;'>\1</span>", 
+            paragraph
+        )
+        for paragraph in user_input.split("\n")
+    ]
+    highlighted_text = "<br>".join(highlighted_paragraphs)  # 使用 <br> 保留段落
     st.markdown("### 高亮顯示：")
     st.markdown(highlighted_text, unsafe_allow_html=True)
