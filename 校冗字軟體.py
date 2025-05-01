@@ -35,6 +35,10 @@ def detect_redundant_words(text, threshold=3):
     marked_text = "\n".join(marked_paragraphs)
     return marked_text, word_counter
 
+# 初始化 session state
+if "highlight_word" not in st.session_state:
+    st.session_state["highlight_word"] = None
+
 # Streamlit 應用程式
 st.title("中文冗字檢測工具")
 st.write("輸入中文文本，檢測是否存在高頻重複的虛詞（如 '的'、'了' 等）。")
@@ -58,15 +62,16 @@ if st.button("檢測"):
         st.sidebar.markdown("### 統計報告")
         st.sidebar.markdown("**高頻虛詞使用情況：**")
         for word, count in word_counter.most_common(5):
-            st.sidebar.markdown(f"- {word}: {count} 次")
+            if st.sidebar.button(f"高亮顯示：{word}"):
+                st.session_state["highlight_word"] = word
     else:
         st.warning("請輸入文本！")
 
 # 高亮顯示用戶選擇的詞
 if st.session_state["highlight_word"]:
     highlight_word = st.session_state["highlight_word"]
-    highlighted_text = user_input.replace(
-        highlight_word, f"<span style='background-color: yellow;'>{highlight_word}</span>"
+    highlighted_text = re.sub(
+        f"({highlight_word})", r"<span style='background-color: yellow;'>\1</span>", user_input
     )
     st.markdown("### 高亮顯示：")
     st.markdown(highlighted_text, unsafe_allow_html=True)
