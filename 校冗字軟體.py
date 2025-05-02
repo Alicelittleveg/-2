@@ -26,10 +26,11 @@ def detect_redundant_words(text, threshold=3):
             # 標記冗字
             for word, count in particle_counts.items():
                 if count > threshold:
-                    paragraph = re.sub(f"({word})", r"**\1**", paragraph)
+                    # 使用非貪婪模式替換，避免多次替換問題
+                    paragraph = re.sub(f"({re.escape(word)})", r"<span style='color:red; font-weight:bold;'>\1</span>", paragraph)
             marked_paragraphs.append(paragraph)
 
-    marked_text = "\n\n".join(marked_paragraphs)  # 保留段落結構
+    marked_text = "<br><br>".join(marked_paragraphs)  # 保留段落結構，使用 HTML 換行
     return marked_text, word_counter
 
 
@@ -50,7 +51,7 @@ if st.button("檢測"):
 
         # 顯示檢測結果
         st.subheader("檢測結果")
-        st.markdown(marked_text.replace("\n", "<br>"), unsafe_allow_html=True)
+        st.markdown(marked_text, unsafe_allow_html=True)
 
         # 顯示統計報告
         st.sidebar.subheader("統計報告")
