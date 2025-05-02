@@ -59,11 +59,10 @@ if st.button("檢測"):
         st.markdown(marked_text, unsafe_allow_html=True)
 
         # 顯示統計報告
-        st.sidebar.markdown("### 統計報告")
-        st.sidebar.markdown("**高頻虛詞使用情況：**")
-        for word, count in word_counter.most_common(5):
-            if st.sidebar.button(f"高亮顯示：{word}"):
-                st.session_state["highlight_word"] = word
+st.sidebar.markdown("### 統計報告")
+st.sidebar.markdown("**高頻虛詞使用情況：**")
+for word, count in word_counter.most_common(5):
+    st.sidebar.markdown(f"- **{word}**: {count} 次")
     else:
         st.warning("請輸入文本！")
 
