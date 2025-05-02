@@ -49,6 +49,9 @@ user_input = st.text_area("請輸入文本。", height=200)
 # 閾值輸入
 threshold = st.slider("設置冗字的重複次數閾值：", min_value=2, max_value=10, value=3)
 
+# 初始化空的 word_counter
+word_counter = Counter()
+
 # 檢測冗字
 if st.button("檢測"):
     if user_input.strip():
@@ -57,9 +60,7 @@ if st.button("檢測"):
         # 顯示檢測結果
         st.markdown("### 檢測結果：")
         st.markdown(marked_text, unsafe_allow_html=True)
-  else:
-        st.warning("請輸入文本！")
-        
+
         # 顯示統計報告
 st.sidebar.markdown("### 統計報告")
 st.sidebar.markdown("**高頻虛詞使用情況：**")
