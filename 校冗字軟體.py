@@ -1,9 +1,10 @@
+
 import streamlit as st
 import re
 from collections import Counter
 
 # 定義常見虛詞列表
-COMMON_PARTICLES = ["的", "了", "而", "就", "是", "在", "和", "也", "不", "有", "著", "那", "要", "對", "這", "個", "嗎", "吧", "呢", "還", "就算", "所以", "但是"]
+common_particles = ["的", "了", "而", "就", "是", "在", "和", "也", "不", "有", "著", "那", "要", "對", "這", "個", "嗎", "吧", "呢", "還", "就算", "所以", "但是"]
 
 # 定義檢測冗字的函數
 def detect_redundant_words(text, threshold=3):
@@ -13,6 +14,7 @@ def detect_redundant_words(text, threshold=3):
     :param threshold: 判定為冗字的重複次數閾值
     :return: 標記冗字的文本和統計報告
     """
+    # 分段處理
     paragraphs = text.split("\n")
     marked_paragraphs = []
     word_counter = Counter()
@@ -21,17 +23,17 @@ def detect_redundant_words(text, threshold=3):
         if paragraph.strip():
             # 統計虛詞頻率
             words = list(paragraph)
-            particle_counts = Counter([word for word in words if word in COMMON_PARTICLES])
+            particle_counts = Counter([word for word in words if word in common_particles])
             word_counter.update(particle_counts)
 
             # 標記冗字
             for word, count in particle_counts.items():
                 if count > threshold:
-                    paragraph = re.sub(f"({re.escape(word)})", r"<span style='color:red; font-weight:bold;'>\1</span>", paragraph)
+                    paragraph = paragraph.replace(word, f"**{word}**")  # 高亮冗字
             marked_paragraphs.append(paragraph)
 
     # 返回標記文本和統計報告
-    marked_text = "<br><br>".join(marked_paragraphs)  # 使用 HTML 保留段落結構
+    marked_text = "\n".join(marked_paragraphs)
     return marked_text, word_counter
 
 # 初始化 session state
@@ -69,14 +71,8 @@ if st.button("檢測"):
 # 高亮顯示用戶選擇的詞
 if st.session_state["highlight_word"]:
     highlight_word = st.session_state["highlight_word"]
-    highlighted_paragraphs = [
-        re.sub(
-            f"({re.escape(highlight_word)})", 
-            r"<span style='background-color: yellow;'>\1</span>", 
-            paragraph
-        )
-        for paragraph in user_input.split("\n")
-    ]
-    highlighted_text = "<br>".join(highlighted_paragraphs)  # 使用 <br> 保留段落
+    highlighted_text = re.sub(
+        f"({highlight_word})", r"<span style='background-color: yellow;'>\1</span>", user_input
+    )
     st.markdown("### 高亮顯示：")
     st.markdown(highlighted_text, unsafe_allow_html=True)
