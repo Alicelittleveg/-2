@@ -57,7 +57,9 @@ if st.button("檢測"):
         # 顯示檢測結果
         st.markdown("### 檢測結果：")
         st.markdown(marked_text, unsafe_allow_html=True)
-
+  else:
+        st.warning("請輸入文本！")
+        
         # 顯示統計報告
 st.sidebar.markdown("### 統計報告")
 st.sidebar.markdown("**高頻虛詞使用情況：**")
