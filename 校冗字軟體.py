@@ -4,30 +4,32 @@ import re
 from collections import Counter
 
 # ── Google Analytics（GA4）追蹤碼 ──────────────────────
-# 啟動時把 GA 程式碼寫進 Streamlit 的 index.html，只會寫入一次
-import pathlib
+# 用 components.html 把 GA 程式碼插進 app 頁面，只會插入一次
+import streamlit.components.v1 as components
 
-GA_SCRIPT = """
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-LB73SCWDRQ"></script>
-<script id="google_analytics">
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-LB73SCWDRQ');
+GA_ID = "G-LB73SCWDRQ"
+
+GA_HTML = """
+<script>
+(function () {
+  var doc = window.parent.document;
+  if (doc.getElementById("google_analytics")) return;
+  var s = doc.createElement("script");
+  s.id = "google_analytics";
+  s.async = true;
+  s.src = "https://www.googletagmanager.com/gtag/js?id=GA_ID_HERE";
+  doc.head.appendChild(s);
+  var inline = doc.createElement("script");
+  inline.text = "window.dataLayer = window.dataLayer || [];" +
+    "function gtag(){dataLayer.push(arguments);}" +
+    "gtag('js', new Date());" +
+    "gtag('config', 'GA_ID_HERE');";
+  doc.head.appendChild(inline);
+})();
 </script>
-"""
+""".replace("GA_ID_HERE", GA_ID)
 
-def inject_ga():
-    try:
-        index_path = pathlib.Path(st.__file__).parent / "static" / "index.html"
-        html = index_path.read_text(encoding="utf-8")
-        if 'id="google_analytics"' not in html:
-            html = html.replace("<head>", "<head>" + GA_SCRIPT, 1)
-            index_path.write_text(html, encoding="utf-8")
-    except Exception:
-        pass  # 就算失敗也不影響 app 運作
-
-inject_ga()
+components.html(GA_HTML, height=0)
 # ─────────────────────────────────────────────────────
 
 # 定義常見虛詞列表
