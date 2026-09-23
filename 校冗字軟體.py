@@ -3,6 +3,33 @@ import streamlit as st
 import re
 from collections import Counter
 
+# ── Google Analytics（GA4）追蹤碼 ──────────────────────
+# 啟動時把 GA 程式碼寫進 Streamlit 的 index.html，只會寫入一次
+import pathlib
+
+GA_SCRIPT = """
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-LB73SCWDRQ"></script>
+<script id="google_analytics">
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-LB73SCWDRQ');
+</script>
+"""
+
+def inject_ga():
+    try:
+        index_path = pathlib.Path(st.__file__).parent / "static" / "index.html"
+        html = index_path.read_text(encoding="utf-8")
+        if 'id="google_analytics"' not in html:
+            html = html.replace("<head>", "<head>" + GA_SCRIPT, 1)
+            index_path.write_text(html, encoding="utf-8")
+    except Exception:
+        pass  # 就算失敗也不影響 app 運作
+
+inject_ga()
+# ─────────────────────────────────────────────────────
+
 # 定義常見虛詞列表
 COMMON_PARTICLES = ["的", "了", "而", "就", "是", "在", "和", "也", "不", "有", "著", "那", "要", "對", "這", "個", "嗎", "吧", "呢", "還", "就算", "所以", "但是"]
 
